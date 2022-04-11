@@ -1,9 +1,7 @@
 package org.elasticsearch.repositories.cos;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Arrays;
-import java.util.Map;
+import java.util.*;
+
 import org.elasticsearch.cluster.metadata.RepositoryMetadata;
 import org.elasticsearch.cluster.service.ClusterService;
 import org.elasticsearch.common.util.BigArrays;
@@ -19,26 +17,42 @@ import org.elasticsearch.xcontent.NamedXContentRegistry;
  * Created by Ethan-Zhang on 30/03/2018.
  */
 public class COSRepositoryPlugin extends Plugin implements RepositoryPlugin {
-
-    protected COSService createStorageService(RepositoryMetadata metaData) {
-        return new COSService(metaData);
+    
+    // proxy method for testing
+    protected COSRepository createRepository(
+            final RepositoryMetadata metadata,
+            final NamedXContentRegistry registry,
+            final ClusterService clusterService,
+            final BigArrays bigArrays,
+            final RecoverySettings recoverySettings
+    ) {
+        return new COSRepository(metadata, registry,
+                new COSService(metadata), clusterService, bigArrays, recoverySettings);
     }
-
+    
     @Override
-    public Map<String, Repository.Factory> getRepositories(final Environment env,
-                                                           final NamedXContentRegistry namedXContentRegistry,
-                                                           final ClusterService clusterService,
-                                                           final BigArrays bigArrays,
-                                                           final RecoverySettings recoverySettings) {
-        return Collections.singletonMap(COSRepository.TYPE,
-                (metadata) -> new COSRepository(metadata, namedXContentRegistry,
-                        createStorageService(metadata), clusterService, bigArrays, recoverySettings));
+    public Map<String, Repository.Factory> getRepositories(
+            final Environment env,
+            final NamedXContentRegistry registry,
+            final ClusterService clusterService,
+            final BigArrays bigArrays,
+            final RecoverySettings recoverySettings
+    ) {
+        return Collections.singletonMap(
+                COSRepository.TYPE,
+                metadata -> createRepository(metadata, registry, clusterService, bigArrays, recoverySettings)
+        );
     }
-
+    
     @Override
     public List<Setting<?>> getSettings() {
-        return Arrays.asList(COSClientSettings.REGION, COSClientSettings.ACCESS_KEY_ID, COSClientSettings.ACCESS_KEY_SECRET,
-                COSClientSettings.APP_ID, COSClientSettings.BUCKET,
-                COSClientSettings.BASE_PATH, COSClientSettings.COMPRESS, COSClientSettings.CHUNK_SIZE, COSClientSettings.END_POINT);
+        return Arrays.asList(
+                // named s3 client configuration settings
+                COSClientSettings.ACCESS_KEY_SETTING,
+                COSClientSettings.SECRET_KEY_SETTING,
+                COSClientSettings.ENDPOINT_SETTING,
+                COSClientSettings.REGION
+        );
     }
+
 }
