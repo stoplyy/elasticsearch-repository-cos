@@ -47,7 +47,7 @@ public class COSRepositoryPlugin extends Plugin implements RepositoryPlugin {
     @Override
     public List<Setting<?>> getSettings() {
         return Arrays.asList(
-                // named s3 client configuration settings
+                // named cos client configuration settings
                 COSClientSettings.ACCESS_KEY_SETTING,
                 COSClientSettings.SECRET_KEY_SETTING,
                 COSClientSettings.ENDPOINT_SETTING,

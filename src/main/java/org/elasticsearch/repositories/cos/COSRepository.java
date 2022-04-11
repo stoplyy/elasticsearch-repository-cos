@@ -176,13 +176,6 @@ public class COSRepository extends MeteredBlobStoreRepository {
             this.bucket = bucket;
         }
     
-        String basePath = BASE_PATH_SETTING.get(metadata.settings());
-        if (basePath.startsWith("/")) {
-            basePath = basePath.substring(1);
-            deprecationLogger.critical(DeprecationCategory.SECURITY, "cos_repository_secret_settings",
-                    "cos repository base_path trimming the leading `/`, and leading `/` will not be supported for the cos repository in future releases");
-        }
-    
         this.bufferSize = BUFFER_SIZE_SETTING.get(metadata.settings());
         this.chunkSize = CHUNK_SIZE_SETTING.get(metadata.settings());
     
@@ -204,12 +197,12 @@ public class COSRepository extends MeteredBlobStoreRepository {
         this.compress = COMPRESS_SETTING.get(metadata.settings());
         coolDown = COOLDOWN_PERIOD.get(metadata.settings());
         
-        logger.trace("using bucket [{}], base_path [{}], chunk_size [{}], compress [{}]", bucket,
-                basePath, chunkSize, compress);
+        logger.info("using bucket [{}-{}], buffer_size [{}], chunk_size [{}], compress [{}]", bucket, app_id, bufferSize,
+                chunkSize, compress);
     }
     
     private static Map<String, String> buildLocation(RepositoryMetadata metadata) {
-        return Map.of("base_path", BASE_PATH_SETTING.get(metadata.settings()),
+        return Map.of("base_path", refineBasePath(metadata),
                 "bucket", BUCKET_SETTING.get(metadata.settings()));
     }
     
@@ -277,8 +270,21 @@ public class COSRepository extends MeteredBlobStoreRepository {
                 SnapshotsService.SHARD_GEN_IN_REPO_DATA_VERSION);
     }
     
+    private static String refineBasePath(RepositoryMetadata metadata) {
+        String basePath = BASE_PATH_SETTING.get(metadata.settings());
+        if (basePath.startsWith("/")) {
+            basePath = basePath.substring(1);
+            deprecationLogger.critical(DeprecationCategory.SECURITY, "cos_repository_secret_settings",
+                    "cos repository base_path trimming the leading `/`, and leading `/` will not be supported for the cos repository in future releases");
+        }
+        if (basePath.endsWith("/")) {
+            basePath = basePath.substring(0, basePath.length()-1);
+        }
+        return basePath;
+    }
+    
     private static BlobPath buildBasePath(RepositoryMetadata metadata) {
-        final String basePath = BASE_PATH_SETTING.get(metadata.settings());
+        String basePath = refineBasePath(metadata);
         if (Strings.hasLength(basePath)) {
             return BlobPath.EMPTY.add(basePath);
         } else {

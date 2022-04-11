@@ -20,41 +20,41 @@ public class COSClientSettings {
         }
     }
     
-    // prefix for s3 client settings
+    // prefix for cos client settings
     private static final String PREFIX = "cos.client.";
     
     /** Placeholder client name for normalizing client settings in the repository settings. */
     private static final String PLACEHOLDER_CLIENT = "placeholder";
     
-    /** The access key (ie login id) for connecting to s3. */
+    /** The access key (ie login id) for connecting to cos. */
     static final Setting.AffixSetting<String> ACCESS_KEY_SETTING = Setting.affixKeySetting(
             PREFIX,
             "access_key_id",
             key -> new Setting<>(key, "", Function.identity(), Property.NodeScope)
     );
     
-    /** The secret key (ie password) for connecting to s3. */
+    /** The secret key (ie password) for connecting to cos. */
     static final Setting.AffixSetting<String> SECRET_KEY_SETTING = Setting.affixKeySetting(
             PREFIX,
             "access_key_secret",
             key -> new Setting<>(key, "", Function.identity(), Property.NodeScope)
     );
     
-    /** An override for the s3 endpoint to connect to. */
+    /** An override for the cos endpoint to connect to. */
     static final Setting.AffixSetting<String> ENDPOINT_SETTING = Setting.affixKeySetting(
             PREFIX,
             "end_point",
             key -> new Setting<>(key, "", s -> s.toLowerCase(Locale.ROOT), Property.NodeScope)
     );
     
-    /** An override for the s3 region to use for signing requests. */
+    /** An override for the cos region to use for signing requests. */
     static final Setting.AffixSetting<String> REGION = Setting.affixKeySetting(
             PREFIX,
             "region",
             key -> new Setting<>(key, "", Function.identity(), Property.NodeScope)
     );
     
-    /** The s3 endpoint the client should talk to, or empty string to use the default. */
+    /** The cos endpoint the client should talk to, or empty string to use the default. */
     final String endpoint;
     
     /** Region to use for signing requests or empty string to use default. */

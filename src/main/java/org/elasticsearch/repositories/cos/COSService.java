@@ -43,7 +43,7 @@ public class COSService implements Closeable {
      * Either fetches {@link COSClientSettings} for a given {@link RepositoryMetadata} from cached settings or creates them
      * by overriding static client settings from {@link #staticClientSettings} with settings found in the repository metadata.
      * @param repositoryMetadata Repository Metadata
-     * @return S3ClientSettings
+     * @return COSClientSettings
      */
     COSClientSettings settings(RepositoryMetadata repositoryMetadata) {
         final Settings settings = repositoryMetadata.settings();
@@ -67,7 +67,7 @@ public class COSService implements Closeable {
             }
         }
         throw new IllegalArgumentException(
-                "Unknown s3 client name ["
+                "Unknown cos client name ["
                         + clientName
                         + "]. Existing client configs: "
                         + Strings.collectionToDelimitedString(staticClientSettings.keySet(), ",")
@@ -76,7 +76,6 @@ public class COSService implements Closeable {
     
     
     private COSClient client;
-    public static final ByteSizeValue MAX_SINGLE_FILE_SIZE = new ByteSizeValue(5, ByteSizeUnit.GB);
     
     COSService(RepositoryMetadata metaData) {
         this.client = createClient(metaData);
