@@ -96,11 +96,17 @@ test {
     dependsOn processTestResources
 }
 
-String cosAccessKeyId = System.getenv("qcloud_cos_access_key_id")
-String cosAccessKeySecret = System.getenv("qcloud_cos_access_key_secret")
-String cosBucket = System.getenv("qcloud_cos_bucket")
-String cosBasePath = System.getenv("qcloud_cos_base_path")
-String cosRegion = System.getenv("qcloud_cos_region")
+// String cosAccessKeyId = System.getenv("qcloud_cos_access_key_id")
+// String cosAccessKeySecret = System.getenv("qcloud_cos_access_key_secret")
+// String cosBucket = System.getenv("qcloud_cos_bucket")
+// String cosBasePath = System.getenv("qcloud_cos_base_path")
+// String cosRegion = System.getenv("qcloud_cos_region")
+
+String cosAccessKeyId = ("qcloud_cos_access_key_id")
+String cosAccessKeySecret = ("qcloud_cos_access_key_secret")
+String cosBucket = ("qcloud_cos_bucket")
+String cosBasePath = ("qcloud_cos_base_path")
+String cosRegion =("qcloud_cos_region")
 
 task thirdPartyTest(type: Test) {
     include '**/CosRepositoryThirdPartyTests.class'

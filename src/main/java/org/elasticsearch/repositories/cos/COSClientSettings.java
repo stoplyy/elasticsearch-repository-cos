@@ -10,6 +10,7 @@ public class COSClientSettings {
     private static final ByteSizeValue MIN_CHUNK_SIZE = new ByteSizeValue(1, ByteSizeUnit.MB);
     private static final ByteSizeValue MAX_CHUNK_SIZE = new ByteSizeValue(1, ByteSizeUnit.GB);
 
+    public static final Setting<String> ACCOUNT = simpleString("account", Setting.Property.NodeScope, Setting.Property.Dynamic);
     public static final Setting<String> REGION =
             simpleString("region", Property.NodeScope, Property.Dynamic);
     public static final Setting<String> ACCESS_KEY_ID =

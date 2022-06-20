@@ -192,7 +192,7 @@ public class COSRepository extends MeteredBlobStoreRepository {
     
     @Override
     protected COSBlobStore createBlobStore() {
-        return new COSBlobStore(this.service.getClient(), this.bucket);
+        return new COSBlobStore(this.service.createClient(metadata), this.bucket);
     }
 
     @Override
