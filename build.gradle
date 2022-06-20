@@ -77,6 +77,7 @@ bundlePlugin {
 
 }
 
+<<<<<<< Updated upstream
 test {
     exclude '**/CosRepositoryThirdPartyTests.class'
     dependsOn processTestResources
@@ -134,3 +135,61 @@ TestClustersRegistry registry = project.rootProject.extensions.create("testClust
 TestClustersPlugin.configureClaimClustersHook(project.gradle, registry)
 TestClustersPlugin.configureStartClustersHook(project.gradle, registry)
 TestClustersPlugin.configureStopClustersHook(project.gradle, registry)
+=======
+// test {
+//     exclude '**/CosRepositoryThirdPartyTests.class'
+//     dependsOn processTestResources
+// }
+
+// String cosAccessKeyId = System.getenv("qcloud_cos_access_key_id")
+// String cosAccessKeySecret = System.getenv("qcloud_cos_access_key_secret")
+// String cosBucket = System.getenv("qcloud_cos_bucket")
+// String cosBasePath = System.getenv("qcloud_cos_base_path")
+// String cosRegion = System.getenv("qcloud_cos_region")
+
+// task thirdPartyTest(type: Test) {
+//     include '**/CosRepositoryThirdPartyTests.class'
+//     systemProperty 'es.allow_insecure_settings', 'true'
+//     systemProperty 'access_key_id', cosAccessKeyId
+//     systemProperty 'access_key_secret', cosAccessKeySecret
+//     systemProperty 'bucket', cosBucket
+//     systemProperty 'base_path', cosBasePath
+//     systemProperty 'region', cosRegion
+// }
+
+// thirdPartyTest {
+//     dependsOn tasks.bundlePlugin
+// }
+
+// processTestResources {
+//     Map<String, Object> expansions = [
+//             'accessKeyId': cosAccessKeyId,
+//             'accessKeySecret': cosAccessKeySecret,
+//             'cosBucket': cosBucket,
+//             'cosBasePath': cosBasePath,
+//     ]
+//     inputs.properties(expansions)
+//     MavenFilteringHack.filter(it, expansions)
+// }
+
+// //integTest {
+// //    dependsOn processTestResources
+// //}
+
+// // elasticsearch.esplugin task configure
+// checkstyleMain.enabled = false
+// checkstyleTest.enabled = false
+// dependencyLicenses.enabled = false
+// licenseMain.enabled = false
+// thirdPartyAudit.enabled = false
+// licenseHeaders.enabled = false
+// forbiddenApisMain.enabled = false
+// forbiddenApisTest.enabled = false
+// licenseTest.enabled = false
+
+
+// TestClustersRegistry registry = project.rootProject.extensions.create("testClustersRegistry", TestClustersRegistry)
+// //TestClustersPlugin.configureClaimClustersHook(project.gradle, registry)
+// //TestClustersPlugin.configureStartClustersHook(project.gradle, registry)
+// //TestClustersPlugin.configureStopClustersHook(project.gradle, registry)
+>>>>>>> Stashed changes

@@ -17,16 +17,21 @@ import java.io.IOException;
 //TODO: 考虑是否需要继承closeable，处理连接池等问题
 public class COSService implements Closeable {
 
-    private COSClient client;
     public static final ByteSizeValue MAX_SINGLE_FILE_SIZE = new ByteSizeValue(5, ByteSizeUnit.GB);
 
-    COSService(RepositoryMetaData metaData) {
-        this.client = createClient(metaData);
+    volatile Map<String, COSClientSecretSettings> secretSettings = emptyMap();
+
+    public COSService(Settings settings) {
+        // eagerly load client settings so that secure settings are read
+        final Map<String, COSClientSecretSettings> clientsSettings = COSClientSecretSettings.load(settings);
+        refreshAndClearCache(clientsSettings);
     }
 
-    private synchronized COSClient createClient(RepositoryMetaData metaData) {
-        String access_key_id = COSClientSettings.ACCESS_KEY_ID.get(metaData.settings());
-        String access_key_secret = COSClientSettings.ACCESS_KEY_SECRET.get(metaData.settings());
+    public synchronized COSClient createClient(RepositoryMetadata metaData) {
+        Tuple<String, String> secret = getSecret(COSClientSettings.ACCOUNT.get(metaData.settings()));
+        String access_key_id = secret.v1();
+        String access_key_secret = secret.v2();
+
         String region = COSClientSettings.REGION.get(metaData.settings());
         if (region == null || !Strings.hasLength(region)) {
             throw new RepositoryException(metaData.name(), "No region defined for cos repository");
@@ -38,18 +43,38 @@ public class COSService implements Closeable {
         if (Strings.hasLength(endPoint)) {
             clientConfig.setEndPointSuffix(endPoint);
         }
-        COSClient client = new COSClient(cred, clientConfig);
 
-        return client;
-    }
-
-    public COSClient getClient() {
-        return this.client;
+        return new COSClient(cred, clientConfig);
     }
 
     @Override
     public void close() throws IOException {
         this.client.shutdown();
+    }
+
+
+    public Map<String, COSClientSecretSettings> refreshAndClearCache(Map<String, COSClientSecretSettings> clientsSettings) {
+        final Map<String, COSClientSecretSettings> prevSettings = this.secretSettings;
+        this.secretSettings = MapBuilder.newMapBuilder(clientsSettings).immutableMap();
+        return prevSettings;
+    }
+
+    private Tuple<String, String> getSecret(RepositoryMetadata metaData) {
+        // meta setting first
+        String access_key_id = COSClientSettings.ACCESS_KEY_ID.get(metaData.settings());
+        String access_key_secret = COSClientSettings.ACCESS_KEY_SECRET.get(metaData.settings());
+        if (access_key_id == null || !Strings.hasLength(access_key_id)||
+            access_key_secret == null || !Strings.hasLength(access_key_secret)) {
+            // secret setting 
+            String account = COSClientSettings.ACCOUNT.get(metaData.settings());
+            final COSClientSecretSettings cosSecretSetting = this.secretSettings.get(account);
+            if (cosSecretSetting == null) {
+                throw new SettingsException("Unable to find cos repo secret settings with name [" + account + "]");
+            }
+            access_key_id = secret.getSecretId();
+            access_key_secret = secret.getSecretKey();
+        }
+        return new Tuple<>(access_key_id, access_key_secret);
     }
 
 }

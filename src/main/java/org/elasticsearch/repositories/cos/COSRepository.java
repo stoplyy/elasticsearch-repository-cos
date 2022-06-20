@@ -70,7 +70,7 @@ public class COSRepository extends BlobStoreRepository {
 
     @Override
     protected COSBlobStore createBlobStore() {
-        return new COSBlobStore(this.service.getClient(), this.bucket);
+        return new COSBlobStore(this.service.createClient(metaData), this.bucket);
     }
 
     @Override
