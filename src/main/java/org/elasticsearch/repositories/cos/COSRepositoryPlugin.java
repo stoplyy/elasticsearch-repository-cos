@@ -50,6 +50,9 @@ public class COSRepositoryPlugin extends Plugin implements RepositoryPlugin, Rel
     public List<Setting<?>> getSettings() {
         return Arrays.asList(
             COSClientSettings.ACCOUNT,
+            COSClientSecretSettings.ACCOUNT_SETTING,
+            COSClientSecretSettings.KEY_SETTING,
+            COSClientSecretSettings.SECRET_SETTING,
             COSClientSettings.REGION,
             COSClientSettings.APP_ID,
             COSClientSettings.BUCKET,
